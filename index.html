@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lumen TTS Gratuito</title>
+    <style>
+        /* Estilos modernos */
+        body { font-family: 'Segoe UI', sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        textarea { width: 100%; height: 150px; padding: 12px; font-size: 16px; }
+        button { background: #4CAF50; color: white; border: none; padding: 12px 24px; cursor: pointer; }
+        .voice-option { display: inline-block; margin-right: 15px; }
+    </style>
+</head>
+<body>
+    <h1>🎤 Conversor de Voz Premium Gratuito</h1>
+    
+    <textarea id="text-input" placeholder="Digite seu texto aqui...">Olá! Esta é uma demonstração de voz premium gratuita.</textarea>
+    
+    <div style="margin: 15px 0;">
+        <strong>Voz:</strong>
+        <label class="voice-option">
+            <input type="radio" name="voice" value="EXAVITQu4vr4xnSDxMaL" checked> Bianca (Brasil)
+        </label>
+        <label class="voice-option">
+            <input type="radio" name="voice" value="VR6AewLTigWG4xSOukaG"> Antônio (Brasil)
+        </label>
+    </div>
+    
+    <button onclick="generateAudio()">Gerar Áudio</button>
+    
+    <div id="audio-container" style="margin-top: 20px;"></div>
+
+    <script>
+        async function generateAudio() {
+            const text = document.getElementById('text-input').value;
+            const voiceId = document.querySelector('input[name="voice"]:checked').value;
+            
+            if (!text) return alert("Digite algum texto!");
+            
+            const response = await fetch('https://api.elevenlabs.io/v1/text-to-speech/' + voiceId, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'audio/mpeg',
+                    'Content-Type': 'application/json',
+                    'xi-api-key': 'SUA_CHAVE_API' // Obtenha em elevenlabs.io
+                },
+                body: JSON.stringify({
+                    text: text,
+                    voice_settings: {
+                        stability: 0.5,
+                        similarity_boost: 0.8
+                    }
+                })
+            });
+            
+            if (!response.ok) return alert("Erro: " + (await response.text()));
+            
+            const audioBlob = await response.blob();
+            const audioUrl = URL.createObjectURL(audioBlob);
+            
+            const audioPlayer = `<audio controls src="${audioUrl}" style="width: 100%; margin-top: 20px;"></audio>
+                                <a href="${audioUrl}" download="lumen_audio.mp3" style="display: block; margin-top: 10px;">⬇️ Baixar Áudio</a>`;
+            
+            document.getElementById('audio-container').innerHTML = audioPlayer;
+        }
+    </script>
+</body>
+</html>
